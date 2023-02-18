@@ -1,50 +1,58 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './App.css';
 
-function fetchData() {
-
-  const serviceKey = process.env.REACT_APP_WEATHER_KEY;
-  const pageNo = 1;
-  const numOfRows = 1000;
-  const dataType = 'JSON';
-  const base_date = 20230218;
-  const base_time = '0500';
-  const nx = 52;
-  const ny = 38;
-
-  const promise = fetch(`https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&pageNo=${pageNo}&numOfRows=${numOfRows}&dataType=${dataType}&base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}`)
-    .then(res => {
-      if (!res.ok) {
-        throw res;
-      }
-      return res.json();
-    })
-  return promise;
-}
 
 function App() {
 
-  const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [data, setData] = useState(null);
-  
-  console.log(data);
+
+  const [error, setError] = useState(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [weatherData, setWeatherData] = useState(null);
+  const [visitJejuData, setVisitJejuData] = useState(null);
+
+  console.log(weatherData)
+  // console.log(visitJejuData)
 
   useEffect(() => {
-    setIsLoaded(false);
+    const weatherUrl = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${process.env.REACT_APP_WEATHER_KEY}&dataType=JSON&numOfRows=1000&pageNo=1&base_date=20230218&base_time=0630&nx=52&ny=38`;
+    const visitJejuUrl = `http://api.visitjeju.net/vsjApi/contents/searchList?apiKey=${process.env.REACT_APP_VISITJEJU_KEY}&locale=kr`;
 
-    fetchData()
-      .then((data) => {setData(data)})
-      .catch((error) => {setError(error)})
-      .finally(() => setIsLoaded(true))
-  }, [])
+    axios.get(weatherUrl)
+      .then(response => {
+        setWeatherData(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
-  if (error) {return <p>패치 실패</p>}
-  if (!isLoaded) {return <p>로딩중....</p>}
+    axios.get(visitJejuUrl)
+      .then(response => {
+        setVisitJejuData(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .finally(() => setIsLoaded(true));
+  }, []);
+
+  if (error) {
+    return <p>failed to fetch</p>
+  }
+
+  if (!isLoaded) {
+    return <p>fetching data...</p>
+  }
+
+  if (weatherData && weatherData.response) {
+    console.log(weatherData.response)
+  }
+  
 
   return (
     <>
-      <p>{data.response.body.items.item[500].fcstValue}</p>
+        <p>{weatherData.response.body.items.item[0].baseDate}</p>
+      
     </>
   );
 }
