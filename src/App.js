@@ -1,24 +1,51 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 
+function fetchData() {
+
+  const serviceKey = process.env.REACT_APP_WEATHER_KEY;
+  const pageNo = 1;
+  const numOfRows = 1000;
+  const dataType = 'JSON';
+  const base_date = 20230218;
+  const base_time = '0500';
+  const nx = 52;
+  const ny = 38;
+
+  const promise = fetch(`https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&pageNo=${pageNo}&numOfRows=${numOfRows}&dataType=${dataType}&base_date=${base_date}&base_time=${base_time}&nx=${nx}&ny=${ny}`)
+    .then(res => {
+      if (!res.ok) {
+        throw res;
+      }
+      return res.json();
+    })
+  return promise;
+}
+
 function App() {
+
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [data, setData] = useState(null);
+  
+  console.log(data);
+
+  useEffect(() => {
+    setIsLoaded(false);
+
+    fetchData()
+      .then((data) => {setData(data)})
+      .catch((error) => {setError(error)})
+      .finally(() => setIsLoaded(true))
+  }, [])
+
+  if (error) {return <p>패치 실패</p>}
+  if (!isLoaded) {return <p>로딩중....</p>}
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <p>{data.response.body.items.item[500].fcstValue}</p>
+    </>
   );
 }
 
