@@ -13,11 +13,11 @@ function App() {
   const [visitJejuData, setVisitJejuData] = useState(null);
   
   const date = new Date()
-  const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString()
+  const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + (date.getDate()-1).toString()
 
 
   useEffect(() => {
-    const weatherUrl = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${process.env.REACT_APP_WEATHER_KEY}&dataType=JSON&numOfRows=1000&pageNo=1&base_date=${nowDate}&base_time=0630&nx=52&ny=38`;
+    const weatherUrl = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${process.env.REACT_APP_WEATHER_KEY}&dataType=JSON&numOfRows=1000&pageNo=1&base_date=${nowDate}&base_time=0500&nx=52&ny=38`;
     const visitJejuUrl = `http://api.visitjeju.net/vsjApi/contents/searchList?apiKey=${process.env.REACT_APP_VISITJEJU_KEY}&locale=kr`;
 
     axios.get(weatherUrl)
@@ -50,10 +50,14 @@ function App() {
     <>
       <Header
       />
+      {weatherData ?
       <Main
         weatherData = {weatherData.response.body.items.item}
         visitJejuData = {visitJejuData.items}
       />
+      :
+      console.log('err')
+    }
     </>
   );
 }

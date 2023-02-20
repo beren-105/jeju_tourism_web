@@ -1,8 +1,8 @@
-import sunImg from './image/henrique-ferreira-CsCNWmtcD8Y-unsplash.jpg'
-import rainImg from './image/mike-kotsch-HNx4QLRgy2k-unsplash.jpg'
-import bitCloudyImg from './image/maxim-hopman-faUSwwulsrU-unsplash.jpg'
-import cloudyImg from './image/nathan-anderson-FAA_bYB7VTg-unsplash.jpg'
-import canola from './image/sung-hun-go-JgZ25Bbc9QU-unsplash.jpg'
+import sunImg from './image/henrique-ferreira-CsCNWmtcD8Y-unsplash.jpg';
+import rainImg from './image/mike-kotsch-HNx4QLRgy2k-unsplash.jpg';
+import bitCloudyImg from './image/maxim-hopman-faUSwwulsrU-unsplash.jpg';
+import cloudyImg from './image/nathan-anderson-FAA_bYB7VTg-unsplash.jpg';
+import canola from './image/sung-hun-go-JgZ25Bbc9QU-unsplash.jpg';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion, faSun, faCloudRain, faCloudSun, faCloud, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -13,34 +13,23 @@ export default function Main(props) {
     const weatherData = props.weatherData;
     const visitJejuData = props.visitJejuData;
     
-    const filterPTY = weatherData.filter(weatherData => weatherData.fcstTime === '0700' && weatherData.category === 'PTY');
-    const filterSKY = weatherData.filter(weatherData => weatherData.fcstTime === '0700' && weatherData.category === 'SKY');
-    
+    const date = new Date()
+    const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString()
     let rain = false;
     
-    
-    const [inside, setInside] = useState(visitJejuData)
-    const [all, setAll] = useState(visitJejuData)
-    const [index, setIndex] = useState(0)
+    const [inside, setInside] = useState(visitJejuData);
+    const [all, setAll] = useState(visitJejuData);
+    const [index, setIndex] = useState(0);
 
+    const [mainImg, setMainImg] = useState(sunImg);
+    const [mainIcon, setMainIcon] = useState(faQuestion);
+    const [mainText, setMainText] = useState('날씨를 찾을 수 없습니다.');
 
+    // 오늘 날씨 세팅
+    function weatherSetting() {
+        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.category === 'PTY');
+        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.category === 'SKY');
 
-    const [mainImg, setMainImg] = useState(null)
-    const [mainIcon, setMainIcon] = useState(faQuestion)
-    const [mainText, setMainText] = useState(null)
-
-    // 날씨별 출력문구
-
-    useEffect(()=> {
-        setInside(() => inside.filter((inside) => {
-            return inside.contentscd.label !== '테마여행';
-            }).sort(() => Math.random() - 0.5).slice(0, 5)
-        );
-        setAll(() => all.sort(() => Math.random() - 0.5).slice(0, 5))
-        mainSection();
-    }, [])
-
-    function mainSection() {
         if (filterPTY[0].fcstValue > 0) {
             rain = true
             setMainImg(rainImg);
@@ -65,16 +54,24 @@ export default function Main(props) {
         } else {
             setMainImg(cloudyImg);
             setMainIcon(faCloud);
-            setMainText('날씨를 찾을 수 없습니다.');
         }
     }
 
+    useEffect(()=> {
+        setInside(() => inside.filter((inside) => {
+            return inside.contentscd.label !== '테마여행';
+            }).sort(() => Math.random() - 0.5).slice(0, 5)
+        );
+        setAll(() => all.sort(() => Math.random() - 0.5).slice(0, 5))
+        weatherSetting();
+    }, [])
 
-    console.log(visitJejuData)
-    console.log(all)
-    console.log(inside)
-    console.log(rain)
 
+    // 오늘의 최저/최고 기온
+    function weatherForecast(items) {
+        let filterWeather = weatherData.filter(weatherData =>weatherData.fcstDate === nowDate && weatherData.category === items)
+        return filterWeather[0].fcstValue
+    }
 
     return(
     <>
@@ -91,7 +88,8 @@ export default function Main(props) {
                             icon={mainIcon}
                         />
                         <h2 className='mb-2 font-medium text-2xl sm:text-3xl lg:text-4xl' >오늘의 제주는</h2>
-                        <h2 className='font-extralight text-5xl sm:text-6xl lg:text-7xl '>{mainText}</h2>
+                        <h2 className='mb-8 font-extralight text-5xl sm:text-6xl lg:text-7xl '>{mainText}</h2>
+                        <p>오늘의 기온은 최저 {weatherForecast('TMN')}℃, 최고 {weatherForecast('TMX')}℃로, 강수 확률은 {weatherForecast('POP')}% 입니다.</p>
                 </div>
             </div>
             <img
@@ -106,9 +104,9 @@ export default function Main(props) {
             <div className='max-w-5xl mx-auto lg:flex lg:items-center'>
                 <div className='text-center mb-8 shrink-0 lg:w-48 lg:text-left lg:mb-0'>
                     <h3 className='text-3xl mb-2 text-amber-500 font-medium'>어디를 갈까?</h3>
-                    <p className='text-sm'>역시 비 올 때는 실내가 최고지.</p>
+                    <p className='text-sm'>{rain ? '역시 비 올 때는 실내가 최고지.' : '어디든지 가는거야!'}</p>
                 </div>
-                <div className='flex relative max-w-5xl px-12 overflow-hidden'>
+                <div className='flex relative px-12 overflow-hidden'>
                     {index === 0 ? null :
                     <div className='absolute top-0 left-8 h-full w-6 bg-gradient-to-r from-white z-10'>
                         <div className='absolute top-0 -left-8 h-full w-8 bg-white'></div>
@@ -162,7 +160,7 @@ export default function Main(props) {
             </div>
         </section>
 
-        {/* 하단 비주얼2 :  */}
+        {/* 하단 비주얼2 : 키워드 */}
         <section className='h-80 overflow-hidden flex items-center relative mb-20'>
             <div className='absolute inset-0 bg-black/50 top-0 left-0'>
                 <div className='max-w-5xl mx-auto text-white'>
