@@ -17,9 +17,6 @@ export default function Main(props) {
     const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString()
     let rain = false;
     
-    const [inside, setInside] = useState(visitJejuData);
-    const [all, setAll] = useState(visitJejuData);
-    const [index, setIndex] = useState(0);
 
     const [mainImg, setMainImg] = useState(sunImg);
     const [mainIcon, setMainIcon] = useState(faQuestion);
@@ -27,8 +24,13 @@ export default function Main(props) {
 
     // 오늘 날씨 세팅
     function weatherSetting() {
-        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.category === 'PTY');
-        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.category === 'SKY');
+        const hours = date.getHours();
+        let time
+
+        {time < 10 ? time = '0'+hours+'00' : time = hours+'00'}
+
+        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'PTY');
+        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'SKY');
 
         if (filterPTY[0].fcstValue > 0) {
             rain = true
@@ -58,19 +60,50 @@ export default function Main(props) {
     }
 
     useEffect(()=> {
-        setInside(() => inside.filter((inside) => {
-            return inside.contentscd.label !== '테마여행';
-            }).sort(() => Math.random() - 0.5).slice(0, 5)
-        );
-        setAll(() => all.sort(() => Math.random() - 0.5).slice(0, 5))
         weatherSetting();
     }, [])
 
 
-    // 오늘의 최저/최고 기온
+    // 오늘의 최저/최고 기온/강수량
     function weatherForecast(items) {
-        let filterWeather = weatherData.filter(weatherData =>weatherData.fcstDate === nowDate && weatherData.category === items)
-        return filterWeather[0].fcstValue
+        let filterWeather = weatherData.filter(weatherData =>weatherData.fcstDate === nowDate && weatherData.category === items);
+        return filterWeather[0].fcstValue;
+    }
+
+    // 시간대별 날씨
+    weatherTime(1)
+    function weatherTime(index) {
+        const time = [];
+        const timeSting = [];
+        const overTime = []
+        // const hours = date.getHours();
+        const hours = 22;
+
+        for (let i=0; i<5; i++) {
+            if (hours+i < 24 ) {
+                time.push(hours+i)
+            } else {
+                overTime.push(i)
+            }
+        }
+
+        for (let i=0; i<=overTime.length; i++) {
+            time.push((hours-1)-i)
+        }
+        time.sort((a,b)=>{return a-b})
+
+        time.map((time)=>{
+            if (time < 10) {
+                return timeSting.push('0'+time+'00')
+            } else {
+                return timeSting.push(time+'00')
+            }
+        })
+
+
+        console.log(timeSting)
+        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index]);
+        console.log(filterPTY)
     }
 
     return(
@@ -92,6 +125,9 @@ export default function Main(props) {
                         <p>오늘의 기온은 최저 {weatherForecast('TMN')}℃, 최고 {weatherForecast('TMX')}℃로, 강수 확률은 {weatherForecast('POP')}% 입니다.</p>
                 </div>
             </div>
+            <div className='absolute bottom-0'>
+                <p>오늘 날씨</p>
+            </div>
             <img
                 className='object-cover sm:w-full h-full '
                 src = {mainImg}
@@ -100,6 +136,35 @@ export default function Main(props) {
         </section>
 
         {/* 하단비주얼1 - 캐러셀 */}
+        <Carousel
+            visitJejuData = {visitJejuData}
+            rain = {rain}
+        />
+        
+        {/* 하단 비주얼2 : 키워드 */}
+        <Keyword />
+    </>
+    )
+}
+
+// 하단비주얼1 - 캐러셀
+function Carousel(props) {
+    const visitJejuData = props.visitJejuData;
+    const rain = props.rain;
+
+    const [index, setIndex] = useState(0);
+    const [inside, setInside] = useState(visitJejuData);
+    const [all, setAll] = useState(visitJejuData);
+
+    useEffect(()=> {
+        setInside(() => inside.filter((inside) => {
+            return inside.contentscd.label !== '테마여행';
+            }).sort(() => Math.random() - 0.5).slice(0, 5)
+        );
+        setAll(() => all.sort(() => Math.random() - 0.5).slice(0, 5))
+    }, [])
+
+    return (
         <section className='lg:px-0 mb-20'>
             <div className='max-w-5xl mx-auto lg:flex lg:items-center'>
                 <div className='text-center mb-8 shrink-0 lg:w-48 lg:text-left lg:mb-0'>
@@ -159,8 +224,13 @@ export default function Main(props) {
                 </div>
             </div>
         </section>
+    )
+}
 
-        {/* 하단 비주얼2 : 키워드 */}
+// 하단 비주얼2 : 키워드
+function Keyword(props) {
+
+    return (
         <section className='h-80 overflow-hidden flex items-center relative mb-20'>
             <div className='absolute inset-0 bg-black/50 top-0 left-0'>
                 <div className='max-w-5xl mx-auto text-white'>
@@ -172,6 +242,5 @@ export default function Main(props) {
                 src={canola}
             />
         </section>
-    </>
     )
 }
