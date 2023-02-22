@@ -4,9 +4,18 @@ import bitCloudyImg from './image/maxim-hopman-faUSwwulsrU-unsplash.jpg';
 import cloudyImg from './image/nathan-anderson-FAA_bYB7VTg-unsplash.jpg';
 import canola from './image/sung-hun-go-JgZ25Bbc9QU-unsplash.jpg';
 
+import { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion, faSun, faCloudRain, faCloudSun, faCloud, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from 'react';
+import { 
+    faQuestion,
+    faSun,
+    faCloudRain,
+    faCloudSun,
+    faCloud,
+    faChevronLeft,
+    faChevronRight,
+    faSquarePlus,
+} from "@fortawesome/free-solid-svg-icons";
 
 
 export default function Main(props) {
@@ -194,7 +203,7 @@ function Carousel(props) {
 
     useEffect(()=> {
         setInside(() => inside.filter((inside) => {
-            return inside.contentscd.label !== '테마여행';
+            return inside.contentscd.label !== '테마여행' && inside.contentscd.label !== '축제/행사';
             }).sort(() => Math.random() - 0.5).slice(0, 5)
         );
         setAll(() => all.sort(() => Math.random() - 0.5).slice(0, 5))
@@ -203,8 +212,8 @@ function Carousel(props) {
     return (
         <section className='lg:px-0 mb-20'>
             <div className='max-w-5xl mx-auto lg:flex lg:items-center'>
-                <div className='text-center mb-8 shrink-0 lg:w-48 lg:text-left lg:mb-0'>
-                    <h3 className='text-3xl mb-2 text-amber-500 font-medium'>어디를 갈까?</h3>
+                <div className='text-center mb-8 shrink-0 lg:w-52 lg:text-left lg:mb-0'>
+                    <h3 className='text-4xl mb-2 text-amber-500 font-bold'>어디를 갈까?</h3>
                     <p className='text-sm'>{rain ? '역시 비 올 때는 실내가 최고지.' : '어디든지 가는거야!'}</p>
                 </div>
                 <div className='flex relative px-12 overflow-hidden'>
@@ -265,23 +274,78 @@ function Carousel(props) {
 
 // 하단 비주얼2 : 키워드
 function Keyword(props) {
-    const visitJejuData = props.visitJejuData
-    // const filterTag = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index] && weatherData.category === 'PTY')[0].fcstValue;
-    console.log(visitJejuData)
+    const visitJejuData = props.visitJejuData;
+    const tags = Array.from(new Set(visitJejuData.map(visitJejuData => visitJejuData.contentscd.label)));
+    tags.unshift('전체');
+    const btn = useRef(null)
+    
+    const [list, setList] = useState(visitJejuData.slice(0,6));
+    const [click, setClick] = useState('전체');
+
+    function filterClick(e) {
+        setClick(e.target.value)
+        let filterVisitJeju = visitJejuData.filter((visitJejuData) => visitJejuData.contentscd.label === e.target.value);
+        
+        if (e.target.value === '전체') {
+            setList(visitJejuData.slice(0,6));
+        } else {
+            setList(filterVisitJeju.slice(0,6));
+            console.log(filterVisitJeju);
+        }
+
+    }
+
     return (
-        <section className='h-80 overflow-hidden flex items-center relative mb-20'>
-            <div className='absolute inset-0 bg-black/50 top-0 left-0'>
-                <div className='max-w-5xl mx-auto text-white'>
-                    <h2>어떤게 끌려?</h2>
-                    <div>
-                        <ul>
-                            <li></li>
-                        </ul>
+        <section className='overflow-hidden flex items-center relative mb-20'>
+            <div className='w-full h-full bg-black/70 z-10 py-10'>
+                <div className='max-w-5xl mx-auto text-white text-center'>
+                    <h2 className='text-4xl p-2 font-bold text-amber-500'>어떤게 끌려?</h2>
+                    <p className='mb-8'>지금 마음이 가는 태그를 클릭해보세요!</p>
+                    <div className='flex justify-evenly text-black bg-white rounded-full mb-6 py-2 mx-4 lg:mx-0'>
+                        {tags.map((tags, i) => (
+                            <button
+                                key={'btn'+i}
+                                className={`py-1 px-4 rounded-full ${tags === click ? 'text-white bg-amber-500' : null} hover:bg-amber-200 duration-300`}
+                                onClick={e => filterClick(e)}
+                                value={tags}
+                                ref={btn}
+                            >
+                                {tags}
+                            </button>
+                        ))}
+                    </div>
+                    <div className='flex flex-wrap justify-between overflow-hidden'>
+                        {list.map((list,i) => (
+                            <div
+                                className='relative basis-1/2 h-56 overflow-hidden group/tagCard lg:basis-1/3'
+                                key={'card'+i}
+                            >
+                                <img
+                                    className='object-cover w-full h-full group-hover/tagCard:scale-110 duration-300'
+                                    key={'img'+i}
+                                    src={list.repPhoto.photoid.thumbnailpath}
+                                />
+                                <div className='absolute inset-0 bg-black/50 text-white opacity-0 group-hover/tagCard:opacity-100 duration-300'>
+                                    <div className='flex flex-col h-full justify-center p-4'>
+                                        <h3 className='text-xl mb-2 font-bold'>{list.title}</h3>
+                                        <FontAwesomeIcon
+                                            size='2xl'
+                                            icon={faSquarePlus}
+                                            color='#fbbf24'
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className='text-center p-8'>
+                        <button className='py-2 px-16 border border-amber-500 rounded-full hover:bg-amber-500 duration-300'>+ 더 보기</button>
+                        
                     </div>
                 </div>
             </div>
             <img
-                className='w-full object-cover'
+                className='absolute top-0 left-0 w-full h-full object-cover blur'
                 src={canola}
             />
         </section>
