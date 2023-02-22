@@ -13,54 +13,50 @@ export default function Main(props) {
     const weatherData = props.weatherData;
     const visitJejuData = props.visitJejuData;
     
-    const date = new Date()
-    const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString()
+    const date = new Date();
+    const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString();
     let rain = false;
     
-
     const [mainImg, setMainImg] = useState(sunImg);
     const [mainIcon, setMainIcon] = useState(faQuestion);
     const [mainText, setMainText] = useState('날씨를 찾을 수 없습니다.');
 
-    // 오늘 날씨 세팅
-    function weatherSetting() {
+    // 현재 날씨 세팅
+    function nowWeatherSetting() {
         const hours = date.getHours();
-        let time
+        let time;
 
-        {time < 10 ? time = '0'+hours+'00' : time = hours+'00'}
+        {time < 10 ? time = '0'+hours+'00' : time = hours+'00'};
 
-        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'PTY');
-        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'SKY');
+        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'PTY')[0].fcstValue;
+        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'SKY')[0].fcstValue;
 
-        if (filterPTY[0].fcstValue > 0) {
-            rain = true
+        if (filterPTY > 0) {
+            rain = true;
             setMainImg(rainImg);
             setMainIcon(faCloudRain);
-            setMainText('비가 옵니다!');
-        } else if (filterSKY[0].fcstValue < 2) {
-            rain = false
+            setMainText('비가 내립니다!');
+        } else if (filterSKY < 2) {
+            rain = false;
             setMainImg(sunImg);
             setMainIcon(faSun);
-            setMainText('맑음입니다!');
+            setMainText('화창한 맑음입니다!');
 
-        } else if (1 < filterSKY[0].fcstValue < 4) {
-            rain = false
+        } else if (1 < filterSKY < 4) {
+            rain = false;
             setMainImg(bitCloudyImg);
             setMainIcon(faCloudSun);
             setMainText('조금 흐립니다!');
-        } else if (filterSKY[0].fcstValue > 3) {
-            rain = false
+        } else if (filterSKY > 3) {
+            rain = false;
             setMainImg(cloudyImg);
             setMainIcon(faCloud);
-            setMainText('흐립니다!');
-        } else {
-            setMainImg(cloudyImg);
-            setMainIcon(faCloud);
+            setMainText('흐린 날씨입니다!');
         }
     }
 
     useEffect(()=> {
-        weatherSetting();
+        nowWeatherSetting();
     }, [])
 
 
@@ -70,40 +66,62 @@ export default function Main(props) {
         return filterWeather[0].fcstValue;
     }
 
-    // 시간대별 날씨
-    weatherTime(1)
-    function weatherTime(index) {
-        const time = [];
-        const timeSting = [];
-        const overTime = []
-        // const hours = date.getHours();
-        const hours = 22;
+    
+    let timeArr = [];
+    // 현재 시각과 비슷한 시각 5개 추리기
+    hours();
+    function hours() {
+        const overTime = [];
+        const hours = date.getHours();
 
-        for (let i=0; i<5; i++) {
-            if (hours+i < 24 ) {
-                time.push(hours+i)
-            } else {
-                overTime.push(i)
-            }
-        }
+        for (let i=0; i<5; i++) {hours+i < 24 ? timeArr.push(hours+i) : overTime.push(i)};
+        for (let i=0; i<=overTime.length; i++) timeArr.push((hours-1)-i);
+        timeArr.sort((a,b)=>{return a-b});
+    }
 
-        for (let i=0; i<=overTime.length; i++) {
-            time.push((hours-1)-i)
-        }
-        time.sort((a,b)=>{return a-b})
+    // 시간대별 날씨 세팅
+    function HourlyWeather(index) {
+        let timeSting = [];
 
-        time.map((time)=>{
+        timeArr.map((time)=>{
             if (time < 10) {
                 return timeSting.push('0'+time+'00')
             } else {
                 return timeSting.push(time+'00')
             }
-        })
+        });
 
+        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index] && weatherData.category === 'PTY')[0].fcstValue;
+        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index] && weatherData.category === 'SKY')[0].fcstValue;
 
-        console.log(timeSting)
-        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index]);
-        console.log(filterPTY)
+        this.index = index;
+        this.setTime = timeArr[index];
+        this.setIcon = function () {
+            if (filterPTY > 0) {
+                return faCloudRain;
+            } else if (filterSKY < 2) {
+                return faSun;
+            } else if (1 < filterSKY < 4) {
+                return faCloudSun;
+            } else if (filterSKY > 3) {
+                return faCloud;
+            } else {
+                return faQuestion;
+            }
+        }
+        this.setWeather = function () {
+            if (filterPTY > 0) {
+                return '비';
+            } else if (filterSKY < 2) {
+                return '맑은';
+            } else if (1 < filterSKY < 4) {
+                return '조금 흐림';
+            } else if (filterSKY > 3) {
+                return '흐림';
+            } else {
+                return '알 수 없음';
+            }
+        }
     }
 
     return(
@@ -122,11 +140,27 @@ export default function Main(props) {
                         />
                         <h2 className='mb-2 font-medium text-2xl sm:text-3xl lg:text-4xl' >오늘의 제주는</h2>
                         <h2 className='mb-8 font-extralight text-5xl sm:text-6xl lg:text-7xl '>{mainText}</h2>
-                        <p>오늘의 기온은 최저 {weatherForecast('TMN')}℃, 최고 {weatherForecast('TMX')}℃로, 강수 확률은 {weatherForecast('POP')}% 입니다.</p>
+                        <p className='text-lg'>오늘의 기온은 최저 {weatherForecast('TMN')}℃, 최고 {weatherForecast('TMX')}℃로, 강수 확률은 {weatherForecast('POP')}% 입니다.</p>
                 </div>
             </div>
-            <div className='absolute bottom-0'>
-                <p>오늘 날씨</p>
+            <div className='absolute bottom-0 text-white p-6 bg-black/70 w-full'>
+                <div className='max-w-5xl mx-auto flex justify-center justify-between'>
+                    {timeArr.map((time, i) => (
+                        <div
+                            key={'div'+i}
+                            className={`flex flex-col items-center ${date.getHours() === time ? 'opacity-90' : 'opacity-50'}`}
+                        >
+                            <FontAwesomeIcon
+                                key={'icon'+i}
+                                className='mb-2'
+                                size='2xl'
+                                icon={new HourlyWeather(i).setIcon()}
+                            />
+                            <p className='text-xs font-bold' key={'text'+i}>{new HourlyWeather(i).setWeather()}</p>
+                            <p className='text-xs font-bold' key={'time'+i}>{new HourlyWeather(i).setTime}시</p>
+                        </div>
+                    ))}
+                </div>
             </div>
             <img
                 className='object-cover sm:w-full h-full '
@@ -142,7 +176,9 @@ export default function Main(props) {
         />
         
         {/* 하단 비주얼2 : 키워드 */}
-        <Keyword />
+        <Keyword
+            visitJejuData = {visitJejuData}
+        />
     </>
     )
 }
@@ -229,12 +265,19 @@ function Carousel(props) {
 
 // 하단 비주얼2 : 키워드
 function Keyword(props) {
-
+    const visitJejuData = props.visitJejuData
+    // const filterTag = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index] && weatherData.category === 'PTY')[0].fcstValue;
+    console.log(visitJejuData)
     return (
         <section className='h-80 overflow-hidden flex items-center relative mb-20'>
             <div className='absolute inset-0 bg-black/50 top-0 left-0'>
                 <div className='max-w-5xl mx-auto text-white'>
-                    <h2>하하하</h2>
+                    <h2>어떤게 끌려?</h2>
+                    <div>
+                        <ul>
+                            <li></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <img

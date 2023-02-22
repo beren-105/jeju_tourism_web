@@ -56,7 +56,7 @@ function App() {
         visitJejuData = {visitJejuData.items}
       />
       :
-      console.log('err')
+      console.log('로딩중...')
     }
     </>
   );
