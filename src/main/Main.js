@@ -184,10 +184,12 @@ export default function Main(props) {
             rain = {rain}
         />
         
-        {/* 하단 비주얼2 : 키워드 */}
+        {/* 하단 비주얼2 - 키워드 */}
         <Keyword
             visitJejuData = {visitJejuData}
         />
+
+        {/* 하단 비주얼3 - 뉴스레터 */}
     </>
     )
 }
@@ -201,12 +203,19 @@ function Carousel(props) {
     const [inside, setInside] = useState(visitJejuData);
     const [all, setAll] = useState(visitJejuData);
 
-    useEffect(()=> {
+    function tagSetting() {
         setInside(() => inside.filter((inside) => {
-            return inside.contentscd.label !== '테마여행' && inside.contentscd.label !== '축제/행사';
+            return inside.contentscd.label !== '테마여행' && inside.contentscd.label !== '축제/행사' && inside.repPhoto;
             }).sort(() => Math.random() - 0.5).slice(0, 5)
         );
-        setAll(() => all.sort(() => Math.random() - 0.5).slice(0, 5))
+        setAll(() => all.filter((all)=> {
+            return all.repPhoto
+            }).sort(() => Math.random() - 0.5).slice(0, 5)
+        );
+    }
+
+    useEffect(()=> {
+        tagSetting()
     }, [])
 
     return (
@@ -255,8 +264,8 @@ function Carousel(props) {
                         >
                             <img
                                 className='h-full w-full object-cover'
-                                key={shuffles.repPhoto.photoid.photoid}
-                                src={shuffles.repPhoto.photoid.imgpath}
+                                key={shuffles.repPhoto?.photoid.photoid}
+                                src={shuffles.repPhoto?.photoid.imgpath}
 
                             />
                             <div className='absolute inset-0 p-6 bg-black/50 text-white text-center flex flex-col items-center justify-center translate-y-80 group-hover/card:translate-y-0 duration-300'>
@@ -275,9 +284,19 @@ function Carousel(props) {
 // 하단 비주얼2 : 키워드
 function Keyword(props) {
     const visitJejuData = props.visitJejuData;
-    const tags = Array.from(new Set(visitJejuData.map(visitJejuData => visitJejuData.contentscd.label)));
-    tags.unshift('전체');
-    const btn = useRef(null)
+    const [tags, setTags] = useState([])
+
+    function tagFliter() {
+        const filterTag = visitJejuData.filter((visitJejuData) => visitJejuData.repPhoto !== null);
+        const label = Array.from(new Set(filterTag.map(filterTag => filterTag.contentscd.label)));
+        label.unshift('전체')
+        setTags(label);
+        console.log(label)
+    }
+
+    useEffect(()=> {
+        tagFliter()
+    }, [])
     
     const [list, setList] = useState(visitJejuData.slice(0,6));
     const [click, setClick] = useState('전체');
@@ -290,11 +309,10 @@ function Keyword(props) {
             setList(visitJejuData.slice(0,6));
         } else {
             setList(filterVisitJeju.slice(0,6));
-            console.log(filterVisitJeju);
         }
 
     }
-
+    
     return (
         <section className='overflow-hidden flex items-center relative mb-20'>
             <div className='w-full h-full bg-black/70 z-10 py-10'>
@@ -308,13 +326,12 @@ function Keyword(props) {
                                 className={`py-1 px-4 rounded-full ${tags === click ? 'text-white bg-amber-500' : null} hover:bg-amber-200 duration-300`}
                                 onClick={e => filterClick(e)}
                                 value={tags}
-                                ref={btn}
                             >
                                 {tags}
                             </button>
                         ))}
                     </div>
-                    <div className='flex flex-wrap justify-between overflow-hidden'>
+                    <div className='flex flex-wrap overflow-hidden'>
                         {list.map((list,i) => (
                             <div
                                 className='relative basis-1/2 h-56 overflow-hidden group/tagCard lg:basis-1/3'
