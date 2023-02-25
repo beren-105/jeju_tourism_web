@@ -19,7 +19,7 @@ function App() {
   const yesterday = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + (date.getDate()-1).toString()
 
   const [nowWeather, setNowWeather] = useState(null)
-
+  const [tags, setTags] = useState([])
 
   useEffect(() => {
     const weatherUrl = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${process.env.REACT_APP_WEATHER_KEY}&dataType=JSON&numOfRows=1000&pageNo=1&base_date=${yesterday}&base_time=0500&nx=52&ny=38`;
@@ -28,7 +28,7 @@ function App() {
     axios.get(weatherUrl)
       .then(response => {
         setWeatherData(response.data);
-        nowWeatherSetting(response.data)
+        nowWeatherSetting(response.data);
       })
       .catch(error => {
         console.log(error);
@@ -37,6 +37,7 @@ function App() {
     axios.get(visitJejuUrl)
       .then(response => {
         setVisitJejuData(response.data);
+        tagFliter(response.data)
       })
       .catch(error => {
         console.log(error);
@@ -53,6 +54,7 @@ function App() {
     return <p>fetching data...</p>
   }
 
+  // 현재 날씨
   function nowWeatherSetting(data) {
     const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString();
     const _weatherData = data.response.body.items.item
@@ -63,9 +65,7 @@ function App() {
 
     const filterPTY = _weatherData.filter(_weatherData => _weatherData.fcstDate === nowDate && _weatherData.fcstTime === time && _weatherData.category === 'PTY')[0].fcstValue;
     const filterSKY = _weatherData.filter(_weatherData => _weatherData.fcstDate === nowDate && _weatherData.fcstTime === time && _weatherData.category === 'SKY')[0].fcstValue;
-    console.log(time)
-    console.log(filterPTY)
-    console.log(filterSKY)
+
     if (filterPTY > 0) {
       setNowWeather('비');
     } else if (2 < filterPTY && filterPTY < 4) {
@@ -81,6 +81,16 @@ function App() {
     }
   }
 
+  // 태그 모음
+  function tagFliter(data) {
+      const _visitJejuData = data.items
+      const filterTag = _visitJejuData.filter((_visitJejuData) => _visitJejuData.repPhoto !== null);
+      const label = Array.from(new Set(filterTag.map(filterTag => filterTag.contentscd.label)));
+
+      label.unshift('전체');
+      setTags(label);
+  }
+
   
   return (
     <Router>
@@ -92,11 +102,15 @@ function App() {
                 weatherData = {weatherData.response.body.items.item}
                 visitJejuData = {visitJejuData.items}
                 nowWeather = {nowWeather}
+                tags = {tags}
               />
           }/>
           <Route path='theme' element={
             visitJejuData &&
-            <Theme visitJejuData = {visitJejuData.items} />
+            <Theme
+              visitJejuData = {visitJejuData.items}
+              tags = {tags}
+            />
           }/>
         </Route>
       </Routes>

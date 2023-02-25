@@ -25,7 +25,6 @@ import {
 export default function MainContent(props) {
     const weatherData = props.weatherData;
     const visitJejuData = props.visitJejuData;
-    const nowWeather = props.nowWeather;
     
     const date = new Date();
     const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString();
@@ -37,7 +36,7 @@ export default function MainContent(props) {
 
     // 현재 날씨 세팅
     function weatherSetting() {
-        switch (nowWeather) {
+        switch (props.nowWeather) {
             case '비' :
                 rain = true;
                 setMainImg(rainImg);
@@ -199,6 +198,7 @@ export default function MainContent(props) {
         {/* 하단 비주얼2 - 키워드 */}
         <Keyword
             visitJejuData = {visitJejuData}
+            tags = {props.tags}
         />
     </>
     )
@@ -311,18 +311,8 @@ function Carousel(props) {
 // 하단 비주얼2 : 키워드
 function Keyword(props) {
     const visitJejuData = props.visitJejuData;
-    const [tags, setTags] = useState([])
+    const tags = props.tags
 
-    function tagFliter() {
-        const filterTag = visitJejuData.filter((visitJejuData) => visitJejuData.repPhoto !== null);
-        const label = Array.from(new Set(filterTag.map(filterTag => filterTag.contentscd.label)));
-        label.unshift('전체')
-        setTags(label);
-    }
-
-    useEffect(()=> {
-        tagFliter()
-    }, [])
     
     const [list, setList] = useState(visitJejuData.slice(0,6));
     const [click, setClick] = useState('전체');
