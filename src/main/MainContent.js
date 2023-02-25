@@ -1,10 +1,14 @@
+import { useEffect, useRef, useState } from 'react';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+
 import sunImg from './image/henrique-ferreira-CsCNWmtcD8Y-unsplash.jpg';
 import rainImg from './image/mike-kotsch-HNx4QLRgy2k-unsplash.jpg';
 import bitCloudyImg from './image/maxim-hopman-faUSwwulsrU-unsplash.jpg';
 import cloudyImg from './image/nathan-anderson-FAA_bYB7VTg-unsplash.jpg';
 import canola from './image/sung-hun-go-JgZ25Bbc9QU-unsplash.jpg';
 
-import { useEffect, useRef, useState } from 'react';
+import Slider from "react-slick";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
     faQuestion,
@@ -18,9 +22,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 
-export default function Main(props) {
+export default function MainContent(props) {
     const weatherData = props.weatherData;
     const visitJejuData = props.visitJejuData;
+    const nowWeather = props.nowWeather;
     
     const date = new Date();
     const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString();
@@ -31,41 +36,48 @@ export default function Main(props) {
     const [mainText, setMainText] = useState('날씨를 찾을 수 없습니다.');
 
     // 현재 날씨 세팅
-    function nowWeatherSetting() {
-        const hours = date.getHours();
-        let time;
-
-        {time < 10 ? time = '0'+hours+'00' : time = hours+'00'};
-
-        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'PTY')[0].fcstValue;
-        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === time && weatherData.category === 'SKY')[0].fcstValue;
-
-        if (filterPTY > 0) {
-            rain = true;
-            setMainImg(rainImg);
-            setMainIcon(faCloudRain);
-            setMainText('비가 내립니다!');
-        } else if (filterSKY < 2) {
-            rain = false;
-            setMainImg(sunImg);
-            setMainIcon(faSun);
-            setMainText('화창한 맑음입니다!');
-
-        } else if (1 < filterSKY < 4) {
-            rain = false;
-            setMainImg(bitCloudyImg);
-            setMainIcon(faCloudSun);
-            setMainText('조금 흐립니다!');
-        } else if (filterSKY > 3) {
-            rain = false;
-            setMainImg(cloudyImg);
-            setMainIcon(faCloud);
-            setMainText('흐린 날씨입니다!');
+    function weatherSetting() {
+        switch (nowWeather) {
+            case '비' :
+                rain = true;
+                setMainImg(rainImg);
+                setMainIcon(faCloudRain);
+                setMainText('비가 내립니다!');
+                break;
+            case '소나기' :
+                rain = true;
+                setMainImg(rainImg);
+                setMainIcon(faCloudRain);
+                setMainText('소나기가 내립니다!');
+                break;
+            case '눈' : 
+                rain = true;
+                setMainImg(rainImg);
+                setMainIcon(faCloudRain);
+                setMainText('눈이 내립니다!');
+            case '맑음' :
+                rain = false;
+                setMainImg(sunImg);
+                setMainIcon(faSun);
+                setMainText('화창한 맑음입니다!');
+                break;
+            case '조금 흐림' : 
+                rain = false;
+                setMainImg(bitCloudyImg);
+                setMainIcon(faCloudSun);
+                setMainText('조금 흐립니다!');
+                break;
+            case '흐림' :
+                rain = false;
+                setMainImg(cloudyImg);
+                setMainIcon(faCloud);
+                setMainText('흐린 날씨입니다!');
+                break;
         }
     }
 
     useEffect(()=> {
-        nowWeatherSetting();
+        weatherSetting();
     }, [])
 
 
@@ -122,7 +134,7 @@ export default function Main(props) {
             if (filterPTY > 0) {
                 return '비';
             } else if (filterSKY < 2) {
-                return '맑은';
+                return '맑음';
             } else if (1 < filterSKY < 4) {
                 return '조금 흐림';
             } else if (filterSKY > 3) {
@@ -138,7 +150,7 @@ export default function Main(props) {
         {/* 메인비주얼 */}
         <section 
             className='w-full overflow-hidden relative mb-20'
-            style={{height: '740px'}}
+            style={{height: '700px'}}
         >
             <div className='absolute top-0 left-0 flex w-full h-full items-center text-white'>
                 <div className='max-w-5xl mx-auto w-full relative max-lg:px-8'>
@@ -188,8 +200,6 @@ export default function Main(props) {
         <Keyword
             visitJejuData = {visitJejuData}
         />
-
-        {/* 하단 비주얼3 - 뉴스레터 */}
     </>
     )
 }
@@ -199,9 +209,9 @@ function Carousel(props) {
     const visitJejuData = props.visitJejuData;
     const rain = props.rain;
 
-    const [index, setIndex] = useState(0);
     const [inside, setInside] = useState(visitJejuData);
     const [all, setAll] = useState(visitJejuData);
+    const [windowSize, setWindowSize] = useState(window.innerWidth)
 
     function tagSetting() {
         setInside(() => inside.filter((inside) => {
@@ -215,52 +225,69 @@ function Carousel(props) {
     }
 
     useEffect(()=> {
-        tagSetting()
+        tagSetting();
+        const resize = () => setWindowSize(window.innerWidth)
+        window.addEventListener('resize', resize)
     }, [])
 
+    const SampleNextArrow = (props) => {
+        const { onClick } = props;
+        return (
+            <button
+                className="absolute -bottom-10 left-2 bg-amber-300 rounded w-8 h-8 hover:bg-amber-500 duration-300" 
+                onClick={onClick}>
+                <FontAwesomeIcon
+                        className='mb-2 p-1.5'
+                        size='lg'
+                        icon={faChevronLeft}
+                        color='#fff'
+                    />
+            </button>
+        );
+      };
+      
+      const SamplePrevArrow = (props) => {
+        const { onClick } = props;
+        return (
+            <button
+                className="absolute -bottom-10 left-12 bg-amber-300 rounded w-8 h-8 hover:bg-amber-500 duration-300" 
+                onClick={onClick}>
+                <FontAwesomeIcon
+                        className='mb-2 p-1.5'
+                        size='lg'
+                        icon={faChevronRight}
+                        color='#fff'
+                    />
+            </button>
+        );
+      };
+
+    const settings = {
+        // dots: true,
+        infinite: true,
+        slidesToShow: (windowSize > 768 ? 4 : 2),
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 2000,
+        pauseOnHover: true,
+        nextArrow: <SampleNextArrow />,
+        prevArrow: <SamplePrevArrow />,
+    };
+
     return (
-        <section className='lg:px-0 mb-20'>
+        <section className='lg:px-0 mb-28'>
             <div className='max-w-5xl mx-auto lg:flex lg:items-center'>
-                <div className='text-center mb-8 shrink-0 lg:w-52 lg:text-left lg:mb-0'>
+                <div className='text-center mb-8 shrink-0 lg:w-60 lg:text-left lg:mb-0'>
                     <h3 className='text-4xl mb-2 text-amber-500 font-bold'>어디를 갈까?</h3>
                     <p className='text-sm'>{rain ? '역시 비 올 때는 실내가 최고지.' : '어디든지 가는거야!'}</p>
                 </div>
-                <div className='flex relative px-12 overflow-hidden'>
-                    {index === 0 ? null :
-                    <div className='absolute top-0 left-8 h-full w-6 bg-gradient-to-r from-white z-10'>
-                        <div className='absolute top-0 -left-8 h-full w-8 bg-white'></div>
-                        <button
-                            onClick={() => setIndex(index+1)}
-                            className='absolute top-1/2 -left-6'
-                        >
-                            <FontAwesomeIcon
-                                size='2xl'
-                                icon={faChevronLeft}
-                                color='#fbbf24'
-                            />
-                        </button>
-                    </div>
-                    }
-                    {index === -2 ? null :
-                    <div className='absolute top-0 right-10 h-full w-6 bg-gradient-to-l from-white z-10'>
-                        <div className='absolute top-0 -right-12 h-full w-12 bg-white'></div>
-                        <button
-                            onClick={() => setIndex(index-1)}
-                            className='absolute top-1/2 -right-10'
-                        >
-                            <FontAwesomeIcon
-                                size='2xl'
-                                icon={faChevronRight}
-                                color='#fbbf24'
-                            />
-                        </button>
-                    </div>
-                    }
+                <Slider {...settings}
+                    className="w-full"
+                >
                     {(rain ? inside : all).map((shuffles, i) => (
                         <div
                             key={'imgDiv'+i}
-                            className='w-60 h-80 overflow-hidden mr-3 shrink-0 relative duration-300 group/card'
-                            style={{transform: `translateX(${255*index}px)`}}
+                            className='w-60 h-80 overflow-hidden relative group/card shrink-0 px-2'
                         >
                             <img
                                 className='h-full w-full object-cover'
@@ -268,14 +295,14 @@ function Carousel(props) {
                                 src={shuffles.repPhoto?.photoid.imgpath}
 
                             />
-                            <div className='absolute inset-0 p-6 bg-black/50 text-white text-center flex flex-col items-center justify-center translate-y-80 group-hover/card:translate-y-0 duration-300'>
+                            <div className='absolute top-0 bottom-0 left-2 right-2 p-6 bg-black/50 text-white text-center flex flex-col items-center justify-center translate-y-80 group-hover/card:translate-y-0 duration-300'>
                                 <h4 className='text-2xl mb-2'>{shuffles.title}</h4>
                                 <p className='text-sm inline-block font-semibold mb-8 px-2 py-1 text-amber-400 border border-amber-400 rounded-full'>{shuffles.contentscd.label}</p>
                                 <p className='text-xs'>{shuffles.address}</p>
                             </div>
                         </div>
                     ))}
-                </div>
+                </Slider>
             </div>
         </section>
     )
@@ -291,7 +318,6 @@ function Keyword(props) {
         const label = Array.from(new Set(filterTag.map(filterTag => filterTag.contentscd.label)));
         label.unshift('전체')
         setTags(label);
-        console.log(label)
     }
 
     useEffect(()=> {
