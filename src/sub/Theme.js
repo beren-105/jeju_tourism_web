@@ -1,4 +1,8 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
+import { 
+    faQuestion,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Theme(props) {
     const visitJejuData = props.visitJejuData;
@@ -149,8 +153,8 @@ export default function Theme(props) {
                 total = {total}
             />
         :
-        <article className="max-w-5xl mx-auto">
-            <h2>검색 결과가 없습니다.</h2>
+        <article className="max-w-5xl mx-auto text-center">
+            <h3 className="text-2xl my-12">검색 결과가 없습니다.</h3>
         </article>
         }
         </>
@@ -162,6 +166,7 @@ function List(props) {
     const total = props.total;
 
     const [pegeData, setPegeDate] = useState(total.slice(0, 12));
+    const [pege, setPege] = useState(1);
     const pegeBtn = []
     
     useEffect(() => {
@@ -170,6 +175,11 @@ function List(props) {
 
     for (let i=1; i<=Math.floor((total.length)/12); i++) {
         pegeBtn.push(i)
+    }
+
+    function pegeClick(index) {
+        setPegeDate(total.slice((12*index-12), (12*index)))
+        setPege(index)
     }
     
 
@@ -183,14 +193,24 @@ function List(props) {
                         key={'article' + i}
                     >
                         <div
-                            className="h-60 rounded overflow-hidden mb-2"
+                            className="h-60 rounded overflow-hidden mb-2 bg-zinc-300 flex items-center justify-center text-center"
                             key={'div' + i}
                         >
+                            {pegeData.repPhoto === null ?
+                                <div>
+                                    <FontAwesomeIcon
+                                        icon={faQuestion}
+                                        size='2xl'
+                                    />
+                                    <p>이미지를 준비 중 입니다.</p>
+                                </div>
+                            :
                             <img
                                 className="w-full h-full object-cover hover:scale-110 duration-300"
                                 key={'img' + i}
                                 src={pegeData.repPhoto.photoid.imgpath}
                             />
+                            }
                         </div>
                         <h4
                             className="text-lg px-2"
@@ -200,11 +220,12 @@ function List(props) {
                 ))
             }
         </section>
-        <div className="max-w-5xl mx-auto text-center mb-4">
-            {pegeBtn.map(pegeBtn => (
+        <div className="max-w-5xl mx-auto text-center mb-8">
+            {pegeBtn.map((pegeBtn, i) => (
                 <button
-                    className="p-2 m-2"
+                    className={`m-1 w-8 h-8 hover:bg-amber-300 rounded-full duration-300 ${pege === i+1 ? 'bg-amber-500 text-white font-bold' : null}`}
                     key={'pegeBtn' + pegeBtn}
+                    onClick={() => pegeClick(i+1)}
                 >
                     {pegeBtn}
                 </button>
