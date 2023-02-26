@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useLocation } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faPenNib, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faPenNib, faCheck, faL } from "@fortawesome/free-solid-svg-icons";
 
 import jejuImg from './image/jejuImg.jpg';
 
@@ -86,7 +86,8 @@ function Comment() {
                 id: Math.floor(Math.random()*10000),
                 comment: inputs,
                 score: option,
-                date: date.getFullYear() + '년 ' + date.getMonth()+1 + '월 ' + date.getDate() + '일 ' + date.getHours() + '시 ' + date.getMinutes() + '분'
+                date: date.getFullYear() + '년 ' + date.getMonth()+1 + '월 ' + date.getDate() + '일 ' + date.getHours() + '시 ' + date.getMinutes() + '분',
+                editing : true
             }];
             const updateComment = [...objects, ...comments];
     
@@ -98,34 +99,40 @@ function Comment() {
     const inputRef = useRef(null)
     const [newScore, setNewScore] = useState('★★★★★')
     const [newComment, setNewComment] = useState('')
-    const [isEditing, setIsEditing] = useState(true);
 
     // 댓글 수정하기
-    function editComment() {
-        setIsEditing(!isEditing)
-        inputRef.current.focus()
-    }
-    function editInput(e) {
-        setNewComment(e.target.value)
-    }
-    function saveComment(id) {
+    function editComment(id) {
+        setNewComment('')
         const edit = comments.map((comment) => {
             if (comment.id === id) {
-                return {...comment, comment:newComment, score:newScore}
+                return {...comment, editing:false}
             } else {
-                throw comment
+                return comment
             }
         })
         setComments(edit)
-        setIsEditing(!isEditing)
+        
+        inputRef.current.focus()
+    }
+    function saveComment(id) {
+        if (inputRef.current.value.trim() !== '') {
+            const edit = comments.map((comment) => {
+                if (comment.id === id) {
+                    return {...comment, comment:newComment, score:newScore, editing:true}
+                } else {
+                    return comment
+                }
+            })
+            setComments(edit)
+        }
     }
 
-    console.log(isEditing)
     // 댓글 삭제하기
     function deleteComment(id) {
         const filter = comments.filter(comments => comments.id !== id);
         setComments(filter);
     }
+
 
     return (
         <article className="max-w-5xl mx-auto mb-12 p-8">
@@ -150,6 +157,7 @@ function Comment() {
                         type='text'
                         onChange={(e) => setInputs(e.target.value)}
                         value={inputs}
+                        placeholder='댓글을 입력해주세요.'
                     />
                     <button
                         className="w-1/6 bg-amber-500 text-white p-4 rounded hover:bg-amber-300 duration-300"
@@ -168,17 +176,17 @@ function Comment() {
                 :
                     comments.map((comments, i) => (
                         <li className="border-b p-4 flex justify-between items-center" key={comments.id} >
-                        {isEditing ?
+                        {comments.editing ?
                         <>
-                            <div key={'comments' + i}>
+                            <div className="w-full" key={'comments' + i}>
                                 <p className="text-sm text-zinc-300" key={'score' + i}>
                                     {comments.score}
                                 </p>
                                 <input
-                                    className={`mb-4 ${isEditing ? 'outline-none' : 'border w-full'}`}
+                                    className={`mb-4 w-full ${comments.editing ? 'outline-none' : 'border'}`}
                                     key={'comment' + i}
                                     value={comments.comment}
-                                    onChange={(e) => editInput(e)}
+                                    readOnly={comments.editing ? true : false}
                                     ref={inputRef}
                                 />
                                 <p className="text-sm text-zinc-300" key={'date' + i}>
@@ -189,7 +197,7 @@ function Comment() {
                                 <button
                                     className="pr-4"
                                     key={'Edit' + i}
-                                    onClick={() => editComment()}
+                                    onClick={() => editComment(comments.id)}
                                 >
                                     <FontAwesomeIcon
                                         icon={faPenNib}
@@ -211,7 +219,7 @@ function Comment() {
                             </>
                             :
                             <>
-                            <div key={'comments' + i}>
+                            <div className="w-full" key={'comments' + i}>
                                 <select
                                 className="text-amber-500 mb-2"
                                 onChange={(e) => setNewScore(e.target.value)}
@@ -223,10 +231,10 @@ function Comment() {
                                 <option value='★☆☆☆☆'>★☆☆☆☆</option>
                                 </select>
                                 <input
-                                    className={`mb-4 ${isEditing ? 'outline-none' : 'border w-full'}`}
+                                    className={`mb-4 ${comments.editing ? 'outline-none' : 'border w-full'}`}
                                     key={'comment' + i}
                                     value={newComment}
-                                    onChange={(e) => editInput(e)}
+                                    onChange={(e) => setNewComment(e.target.value)}
                                     ref={inputRef}
                                 />
                                 <p className="text-sm text-zinc-300" key={'date' + i}>
