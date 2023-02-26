@@ -6,6 +6,7 @@ import Header from './main/Header';
 import Footer from './main/Footer';
 import MainContent from './main/MainContent';
 import Theme from './sub/Theme';
+import Detail from './sub/Detail';
 
 
 function App() {
@@ -112,6 +113,7 @@ function App() {
               tags = {tags}
             />
           }/>
+          <Route path='theme/defail' element={<Detail />} />
         </Route>
       </Routes>
     </Router>

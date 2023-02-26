@@ -1,8 +1,6 @@
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
-import { 
-    faQuestion,
-} from "@fortawesome/free-solid-svg-icons";
+import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 export default function Theme(props) {
     const visitJejuData = props.visitJejuData;
@@ -72,6 +70,7 @@ export default function Theme(props) {
         }
     }
     
+    // 분류 버튼과 검색창 결과 필터링
     function matchingData(search, tag) {
         if (search.length === 0 || tag.length === 0) {
             setTotal(null);
@@ -177,6 +176,7 @@ function List(props) {
         pegeBtn.push(i)
     }
 
+    // 페이지 이동
     function pegeClick(index) {
         setPegeDate(total.slice((12*index-12), (12*index)))
         setPege(index)

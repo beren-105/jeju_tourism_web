@@ -20,6 +20,7 @@ import {
     faChevronRight,
     faSquarePlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { Link, useNavigate } from 'react-router-dom';
 
 
 export default function MainContent(props) {
@@ -262,6 +263,7 @@ function Carousel(props) {
         );
       };
 
+    // 캐러셀 라이브러리
     const settings = {
         // dots: true,
         infinite: true,
@@ -273,6 +275,12 @@ function Carousel(props) {
         nextArrow: <SampleNextArrow />,
         prevArrow: <SamplePrevArrow />,
     };
+
+    // 페이지 이동
+    const navigate = useNavigate();
+    function navDealil(item) {
+        navigate('/theme/defail', {state: {item: item}});
+    }
 
     return (
         <section className='lg:px-0 mb-28'>
@@ -295,7 +303,10 @@ function Carousel(props) {
                                 src={shuffles.repPhoto?.photoid.imgpath}
 
                             />
-                            <div className='absolute top-0 bottom-0 left-2 right-2 p-6 bg-black/50 text-white text-center flex flex-col items-center justify-center translate-y-80 group-hover/card:translate-y-0 duration-300'>
+                            <div
+                                onClick={() => navDealil(shuffles)}
+                                className='cursor-pointer absolute top-0 bottom-0 left-2 right-2 p-6 bg-black/50 text-white text-center flex flex-col items-center justify-center translate-y-80 group-hover/card:translate-y-0 duration-300'
+                            >
                                 <h4 className='text-2xl mb-2'>{shuffles.title}</h4>
                                 <p className='text-sm inline-block font-semibold mb-8 px-2 py-1 text-amber-400 border border-amber-400 rounded-full'>{shuffles.contentscd.label}</p>
                                 <p className='text-xs'>{shuffles.address}</p>
@@ -326,7 +337,12 @@ function Keyword(props) {
         } else {
             setList(filterVisitJeju.slice(0,6));
         }
+    }
 
+    // 페이지 이동
+    const navigate = useNavigate();
+    function navDealil(item) {
+        navigate('/theme/defail', {state: {item: item}});
     }
     
     return (
@@ -359,7 +375,10 @@ function Keyword(props) {
                                     src={list.repPhoto.photoid.thumbnailpath}
                                 />
                                 <div className='absolute inset-0 bg-black/50 text-white opacity-0 group-hover/tagCard:opacity-100 duration-300'>
-                                    <div className='flex flex-col h-full justify-center p-4'>
+                                    <div
+                                        className='cursor-pointer flex flex-col h-full justify-center p-4'
+                                        onClick={() => navDealil(list)}
+                                    >
                                         <h3 className='text-xl mb-2 font-bold'>{list.title}</h3>
                                         <FontAwesomeIcon
                                             size='2xl'
@@ -372,8 +391,9 @@ function Keyword(props) {
                         ))}
                     </div>
                     <div className='text-center p-8'>
-                        <button className='py-2 px-16 border border-amber-500 rounded-full hover:bg-amber-500 duration-300'>+ 더 보기</button>
-                        
+                        <Link to='/theme'>
+                            <button className='py-2 px-16 border border-amber-500 rounded-full hover:bg-amber-500 duration-300'>+ 더 보기</button>
+                        </Link>
                     </div>
                 </div>
             </div>
