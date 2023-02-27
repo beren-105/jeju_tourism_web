@@ -49,14 +49,18 @@ export default function Detail() {
                 : null }
                 <div className="text-lg leading-8">
                     <p>{item.introduction}</p>
-                    <p>
-                        <span className="font-bold text-amber-500">주소 : </span>
-                        {item.address}
-                    </p>
-                    <p>
-                        <span className="font-bold text-amber-500">전화번호 : </span>
-                        {item.phoneno}
-                    </p>
+                    {item.address &&
+                        <p>
+                            <span className="font-bold text-amber-500">주소 : </span>
+                            {item.address}
+                        </p>
+                    }
+                    {item.phoneno &&
+                        <p>
+                            <span className="font-bold text-amber-500">전화번호 : </span>
+                            {item.phoneno}
+                        </p>
+                    }
                 </div>
             </div>
         </section>
@@ -153,7 +157,7 @@ function Comment() {
                 </select>
                 <div className="flex">
                     <input
-                        className="border w-full rounded"
+                        className="border w-full rounded px-4"
                         type='text'
                         onChange={(e) => setInputs(e.target.value)}
                         value={inputs}
