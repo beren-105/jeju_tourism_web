@@ -65,12 +65,12 @@ export default function Detail() {
             </div>
         </section>
 
-        <Comment />
+        <Review />
         </>
     )
 }
 
-function Comment() {
+function Review() {
     const [comments, setComments] = useState([]);
 
     const [inputs, setInputs] = useState('');
@@ -99,44 +99,6 @@ function Comment() {
             setInputs('');
         }
     }
-
-    const inputRef = useRef(null)
-    const [newScore, setNewScore] = useState('★★★★★')
-    const [newComment, setNewComment] = useState('')
-
-    // 댓글 수정하기
-    function editComment(id) {
-        setNewComment('')
-        const edit = comments.map((comment) => {
-            if (comment.id === id) {
-                return {...comment, editing:false}
-            } else {
-                return comment
-            }
-        })
-        setComments(edit)
-        
-        inputRef.current.focus()
-    }
-    function saveComment(id) {
-        if (inputRef.current.value.trim() !== '') {
-            const edit = comments.map((comment) => {
-                if (comment.id === id) {
-                    return {...comment, comment:newComment, score:newScore, editing:true}
-                } else {
-                    return comment
-                }
-            })
-            setComments(edit)
-        }
-    }
-
-    // 댓글 삭제하기
-    function deleteComment(id) {
-        const filter = comments.filter(comments => comments.id !== id);
-        setComments(filter);
-    }
-
 
     return (
         <article className="max-w-5xl mx-auto mb-12 p-8">
@@ -178,103 +140,147 @@ function Comment() {
                 {comments.length === 0 ?
                     <li className="text-center py-8">현재 리뷰가 없습니다.</li>
                 :
-                    comments.map((comments, i) => (
-                        <li className="border-b p-4 flex justify-between items-center" key={comments.id} >
-                        {comments.editing ?
-                        <>
-                            <div className="w-full" key={'comments' + i}>
-                                <p className="text-sm text-zinc-300" key={'score' + i}>
-                                    {comments.score}
-                                </p>
-                                <input
-                                    className={`mb-4 w-full ${comments.editing ? 'outline-none' : 'border'}`}
-                                    key={'comment' + i}
-                                    value={comments.comment}
-                                    readOnly={comments.editing ? true : false}
-                                    ref={inputRef}
-                                />
-                                <p className="text-sm text-zinc-300" key={'date' + i}>
-                                    {comments.date}
-                                </p>
-                            </div>
-                            <div className="shrink-0" key={'btns' + i}>
-                                <button
-                                    className="pr-4"
-                                    key={'Edit' + i}
-                                    onClick={() => editComment(comments.id)}
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faPenNib}
-                                        size='xl'
-                                        color='#7DB9B6'
-                                    />
-                                </button>
-                                <button
-                                    key={'delete' + i}
-                                    onClick={() => deleteComment(comments.id)}
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faTrash}
-                                        size='xl'
-                                        color='#E96479'
-                                    />
-                                </button>
-                            </div>
-                            </>
-                            :
-                            <>
-                            <div className="w-full" key={'comments' + i}>
-                                <select
-                                className="text-amber-500 mb-2"
-                                onChange={(e) => setNewScore(e.target.value)}
-                                >
-                                <option value='★★★★★'>★★★★★</option>
-                                <option value='★★★★☆'>★★★★☆</option>
-                                <option value='★★★☆☆'>★★★☆☆</option>
-                                <option value='★★☆☆☆'>★★☆☆☆</option>
-                                <option value='★☆☆☆☆'>★☆☆☆☆</option>
-                                </select>
-                                <input
-                                    className={`mb-4 ${comments.editing ? 'outline-none' : 'border w-full'}`}
-                                    key={'comment' + i}
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
-                                    ref={inputRef}
-                                />
-                                <p className="text-sm text-zinc-300" key={'date' + i}>
-                                    {comments.date}
-                                </p>
-                            </div>
-                            <div className="shrink-0" key={'btns' + i}>
-                                <button
-                                    className="pr-4"
-                                    key={'Edit' + i}
-                                    onClick={() => saveComment(comments.id)}
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faCheck}
-                                        size='xl'
-                                        color='#7DB9B6'
-                                    />
-                                </button>
-                                <button
-                                    key={'delete' + i}
-                                    onClick={() => deleteComment(comments.id)}
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faTrash}
-                                        size='xl'
-                                        color='#E96479'
-                                    />
-                                </button>
-                            </div>
-                            </>
-                            }
-                        </li>
-                        
+                    comments.map((comment) => (
+                        <Comment
+                            key = {comment.id}
+                            comment = {comment}
+                            comments = {comments}
+                            setComments = {setComments}
+                        />
                     ))
                 }
             </ul>
         </article>
+    )
+}
+
+function Comment(props) {
+    const comment = props.comment
+    const comments = props.comments
+    const setComments = props.setComments
+
+    const inputRef = useRef(null)
+    const [newScore, setNewScore] = useState('★★★★★')
+    const [newComment, setNewComment] = useState('')
+
+    // 댓글 수정하기
+    function editComment(id) {
+        setNewComment('')
+        const edit = comments.map((comment) => {
+            if (comment.id === id) {
+                return {...comment, editing:false}
+            } else {
+                return comment
+            }
+        })
+        setComments(edit)
+        
+        inputRef.current.focus()
+    }
+
+    // 댓글 저장하기
+    function saveComment(id) {
+        if (inputRef.current.value.trim() !== '') {
+            const edit = comments.map((comment) => {
+                if (comment.id === id) {
+                    return {...comment, comment:newComment, score:newScore, editing:true}
+                } else {
+                    return comment
+                }
+            })
+            setComments(edit)
+        }
+    }
+
+    // 댓글 삭제하기
+    function deleteComment(id) {
+        const filter = comments.filter(comments => comments.id !== id);
+        setComments(filter);
+    }
+
+    return (
+        <>
+        {comment.editing ?
+        // 수정중이 아닐 시
+        <li className="border-b p-4 flex justify-between items-center">
+            <div className="w-full">
+                <p className="text-sm text-zinc-300">{comment.score}</p>
+                <input
+                    className="mb-4 w-full outline-none"
+                    value={comment.comment}
+                    readOnly
+                    ref={inputRef}
+                />
+                <p className="text-sm text-zinc-300">{comment.date}</p>
+            </div>
+            <div className="shrink-0">
+                <button
+                    className="pr-4"
+                    onClick={() => editComment(comment.id)}
+                >
+                    <FontAwesomeIcon
+                        icon={faPenNib}
+                        size='xl'
+                        color='#7DB9B6'
+                    />
+                </button>
+                <button
+                    onClick={() => deleteComment(comment.id)}
+                >
+                    <FontAwesomeIcon
+                        icon={faTrash}
+                        size='xl'
+                        color='#E96479'
+                    />
+                </button>
+            </div>
+        </li>
+
+        :
+        //수정 중일 시
+        <li className="border-b p-4 flex justify-between items-center">
+            <div className="w-full">
+                <select
+                className="text-amber-500 mb-2"
+                onChange={(e) => setNewScore(e.target.value)}
+                >
+                <option value='★★★★★'>★★★★★</option>
+                <option value='★★★★☆'>★★★★☆</option>
+                <option value='★★★☆☆'>★★★☆☆</option>
+                <option value='★★☆☆☆'>★★☆☆☆</option>
+                <option value='★☆☆☆☆'>★☆☆☆☆</option>
+                </select>
+                <input
+                    className="mb-4 w-full border p-2"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    ref={inputRef}
+                />
+                <p className="text-sm text-zinc-300">{comment.date}</p>
+            </div>
+            <div className="shrink-0">
+                <button
+                    className="pr-4"
+                    onClick={() => saveComment(comment.id)}
+                >
+                    <FontAwesomeIcon
+                        icon={faCheck}
+                        size='xl'
+                        color='#7DB9B6'
+                    />
+                </button>
+                <button
+                    onClick={() => deleteComment(comments.id)}
+                >
+                    <FontAwesomeIcon
+                        icon={faTrash}
+                        size='xl'
+                        color='#E96479'
+                    />
+                </button>
+            </div>
+        </li>
+        }
+        </>
     )
 }
