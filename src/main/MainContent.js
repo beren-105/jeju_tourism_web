@@ -6,6 +6,7 @@ import sunImg from './image/henrique-ferreira-CsCNWmtcD8Y-unsplash.jpg';
 import rainImg from './image/mike-kotsch-HNx4QLRgy2k-unsplash.jpg';
 import bitCloudyImg from './image/maxim-hopman-faUSwwulsrU-unsplash.jpg';
 import cloudyImg from './image/nathan-anderson-FAA_bYB7VTg-unsplash.jpg';
+import snowImg from './image/jessica-fadel-SH4GNXNj1RA-unsplash.jpg';
 import canola from './image/sung-hun-go-JgZ25Bbc9QU-unsplash.jpg';
 
 import Slider from "react-slick";
@@ -16,6 +17,7 @@ import {
     faCloudRain,
     faCloudSun,
     faCloud,
+    faSnowflake,
     faChevronLeft,
     faChevronRight,
     faSquarePlus,
@@ -26,10 +28,12 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function MainContent(props) {
     const weatherData = props.weatherData;
     const visitJejuData = props.visitJejuData;
+    const today = props.today;
+
     
     const date = new Date();
-    const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString();
     let rain = false;
+
     
     const [mainImg, setMainImg] = useState(sunImg);
     const [mainIcon, setMainIcon] = useState(faQuestion);
@@ -52,8 +56,8 @@ export default function MainContent(props) {
                 break;
             case '눈' : 
                 rain = true;
-                setMainImg(rainImg);
-                setMainIcon(faCloudRain);
+                setMainImg(snowImg);
+                setMainIcon(faSnowflake);
                 setMainText('눈이 내립니다!');
             case '맑음' :
                 rain = false;
@@ -79,11 +83,11 @@ export default function MainContent(props) {
     useEffect(()=> {
         weatherSetting();
     }, [])
-
+    
 
     // 오늘의 최저/최고 기온/강수량
     function weatherForecast(items) {
-        let filterWeather = weatherData.filter(weatherData =>weatherData.fcstDate === nowDate && weatherData.category === items);
+        const filterWeather = weatherData.filter(weatherData =>weatherData.fcstDate === today && weatherData.category === items);
         return filterWeather[0].fcstValue;
     }
 
@@ -112,8 +116,8 @@ export default function MainContent(props) {
             }
         });
 
-        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index] && weatherData.category === 'PTY')[0].fcstValue;
-        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === nowDate && weatherData.fcstTime === timeSting[index] && weatherData.category === 'SKY')[0].fcstValue;
+        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === today && weatherData.fcstTime === timeSting[index] && weatherData.category === 'PTY')[0].fcstValue;
+        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === today && weatherData.fcstTime === timeSting[index] && weatherData.category === 'SKY')[0].fcstValue;
 
         this.index = index;
         this.setTime = timeArr[index];
@@ -279,7 +283,7 @@ function Carousel(props) {
     // 페이지 이동
     const navigate = useNavigate();
     function navDealil(item) {
-        navigate('/theme/defail', {state: {item: item}});
+        navigate('/theme/'+item.contentsid, {state: {item: item}});
     }
 
     return (
@@ -342,7 +346,7 @@ function Keyword(props) {
     // 페이지 이동
     const navigate = useNavigate();
     function navDealil(item) {
-        navigate('/theme/defail', {state: {item: item}});
+        navigate('/theme/'+item.contentsid, {state: {item: item}});
     }
     
     return (

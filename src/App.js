@@ -10,18 +10,47 @@ import Detail from './sub/Detail';
 
 
 function App() {
+  const date = new Date();
+  let yesterday
+  let today
+
+  // 어제/오늘 일자
+  function getDay() {
+    if (date.getDate() === 1 && date.getMonth() < 10) {
+      const year = date.getFullYear().toString();
+      const month = ("0" + (date.getMonth() + 1)).slice(-2);
+      const day = ('0' + date.getDate()).slice(-2);
+
+      const _prevMonth = new Date(date.getFullYear(), date.getMonth()-1, 1)
+      const _prevDay = new Date(date.getFullYear(), date.getMonth(), 0)
+      const prevMonth = ("0" + (_prevMonth.getMonth() + 1)).slice(-2);
+      const prevDay = ('0' + _prevDay.getDate()).slice(-2);
+
+      yesterday = (year + prevMonth + prevDay)
+      today = (year + month + day)
+    }
+    if (date.getDate() < 1) {
+      const year = date.getFullYear().toString();
+      const month = ("0" + (date.getMonth() + 1)).slice(-2);
+      const prevDay = ('0' + date.getDate() - 1).slice(-2);
+      const day = ('0' + date.getDate() - 1).slice(-2);
+      
+      yesterday = (year + month + prevDay)
+      today = (year + month + day)
+    }
+  }
+  getDay()
+
 
   const [error, setError] = useState(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [weatherData, setWeatherData] = useState(null);
   const [visitJejuData, setVisitJejuData] = useState(null);
   
-  const date = new Date()
-  const yesterday = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + (date.getDate()-1).toString()
 
   const [nowWeather, setNowWeather] = useState(null)
   const [tags, setTags] = useState([])
-
+  
   useEffect(() => {
     const weatherUrl = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${process.env.REACT_APP_WEATHER_KEY}&dataType=JSON&numOfRows=1000&pageNo=1&base_date=${yesterday}&base_time=0500&nx=52&ny=38`;
     const visitJejuUrl = `http://api.visitjeju.net/vsjApi/contents/searchList?apiKey=${process.env.REACT_APP_VISITJEJU_KEY}&locale=kr`;
@@ -55,17 +84,17 @@ function App() {
     return <p>fetching data...</p>
   }
 
+
   // 현재 날씨
   function nowWeatherSetting(data) {
-    const nowDate = date.getFullYear().toString() + '0' + (date.getMonth()+1).toString() + date.getDate().toString();
     const _weatherData = data.response.body.items.item
     const hours = date.getHours();
     let time;
 
     {time < 10 ? time = '0'+hours+'00' : time = hours+'00'};
 
-    const filterPTY = _weatherData.filter(_weatherData => _weatherData.fcstDate === nowDate && _weatherData.fcstTime === time && _weatherData.category === 'PTY')[0].fcstValue;
-    const filterSKY = _weatherData.filter(_weatherData => _weatherData.fcstDate === nowDate && _weatherData.fcstTime === time && _weatherData.category === 'SKY')[0].fcstValue;
+    const filterPTY = _weatherData.filter(_weatherData => _weatherData.fcstDate === today && _weatherData.fcstTime === time && _weatherData.category === 'PTY')[0].fcstValue;
+    const filterSKY = _weatherData.filter(_weatherData => _weatherData.fcstDate === today && _weatherData.fcstTime === time && _weatherData.category === 'SKY')[0].fcstValue;
 
     if (filterPTY > 0) {
       setNowWeather('비');
@@ -91,8 +120,6 @@ function App() {
       label.unshift('전체');
       setTags(label);
   }
-
-  
   return (
     <Router>
       <Routes>
@@ -104,6 +131,7 @@ function App() {
                 visitJejuData = {visitJejuData.items}
                 nowWeather = {nowWeather}
                 tags = {tags}
+                today = {today}
               />
           }/>
           <Route path='theme' element={
@@ -113,7 +141,7 @@ function App() {
               tags = {tags}
             />
           }/>
-          <Route path='theme/defail' element={<Detail />} />
+          <Route path='theme/:id' element={<Detail />} />
         </Route>
       </Routes>
     </Router>

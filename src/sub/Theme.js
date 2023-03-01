@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export default function Theme(props) {
     const visitJejuData = props.visitJejuData;
@@ -40,7 +41,7 @@ export default function Theme(props) {
 
         switch (select) {
             case '전체' :
-                const all = search.filter((visitJejuData) => {
+                const all = visitJejuData.filter((visitJejuData) => {
                     return (visitJejuData.address !== null && visitJejuData.address.includes(inputValue))
                     || (visitJejuData.title !== null && visitJejuData.title.includes(inputValue))
                     || (visitJejuData.alltag !== null && visitJejuData.alltag.includes(inputValue))
@@ -48,19 +49,19 @@ export default function Theme(props) {
                 setSearch(all);
                 break;
             case '주소' :
-                const address = search.filter((visitJejuData) => {
+                const address = visitJejuData.filter((visitJejuData) => {
                     return visitJejuData.address !== null && visitJejuData.address.includes(inputValue)
                 });
                 setSearch(address);
                 break;
             case '이름' :
-                const title = search.filter((visitJejuData) => {
+                const title = visitJejuData.filter((visitJejuData) => {
                     return visitJejuData.title !== null && visitJejuData.title.includes(inputValue)
                 });
                 setSearch(title);
                 break;
             case '태그' :
-                const alltag = search.filter((visitJejuData) => {
+                const alltag = visitJejuData.filter((visitJejuData) => {
                     return visitJejuData.alltag !== null && visitJejuData.alltag.includes(inputValue)
                 });
                 setSearch(alltag);
@@ -172,7 +173,7 @@ function List(props) {
         setPegeDate(total.slice(0, 12))
     }, [total])
 
-    for (let i=1; i<=Math.floor((total.length)/12); i++) {
+    for (let i=1; i<=Math.ceil((total.length)/12); i++) {
         pegeBtn.push(i)
     }
 
@@ -187,36 +188,10 @@ function List(props) {
         <>
         <section className="max-w-5xl mx-auto flex flex-wrap">
             {
-                pegeData.map((pegeData, i) => (
-                    <article
-                        className="px-2 py-4 basis-1/2 lg:basis-1/4"
-                        key={'article' + i}
-                    >
-                        <div
-                            className="h-60 rounded overflow-hidden mb-2 bg-zinc-300 flex items-center justify-center text-center"
-                            key={'div' + i}
-                        >
-                            {pegeData.repPhoto === null ?
-                                <div>
-                                    <FontAwesomeIcon
-                                        icon={faQuestion}
-                                        size='2xl'
-                                    />
-                                    <p>이미지를 준비 중 입니다.</p>
-                                </div>
-                            :
-                            <img
-                                className="w-full h-full object-cover hover:scale-110 duration-300"
-                                key={'img' + i}
-                                src={pegeData.repPhoto.photoid.imgpath}
-                            />
-                            }
-                        </div>
-                        <h4
-                            className="text-lg px-2"
-                            key={'title' + i}
-                        >{pegeData.title}</h4>
-                    </article>
+                pegeData.map(pegeData => (
+                    <Article
+                    pegeData = {pegeData}
+                    />
                 ))
             }
         </section>
@@ -232,5 +207,41 @@ function List(props) {
             ))}
         </div>
         </>
+    )
+}
+
+function Article(props) {
+    const pegeData = props.pegeData
+    const navigate = useNavigate();
+    
+    function navDealil(item) {
+        navigate('/theme/'+item.contentsid, {state: {item: item}});
+    }
+
+    return (
+        <article className="px-2 py-4 basis-1/2 lg:basis-1/4">
+            <div
+                className="cursor-pointer h-60 rounded overflow-hidden mb-2 bg-zinc-300 flex items-center justify-center text-center"
+                onClick={() => navDealil(pegeData)}
+            >
+                {pegeData.repPhoto === null ?
+                    <div>
+                        <FontAwesomeIcon
+                            icon={faQuestion}
+                            size='2xl'
+                        />
+                        <p>이미지를 준비 중 입니다.</p>
+                    </div>
+                :
+                <img
+                    className="w-full h-full object-cover hover:scale-110 duration-300"
+                    src={pegeData.repPhoto.photoid.imgpath}
+                />
+                }
+            </div>
+            <h4
+                className="text-lg px-2"
+            >{pegeData.title}</h4>
+        </article>
     )
 }
