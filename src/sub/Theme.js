@@ -42,27 +42,27 @@ export default function Theme(props) {
         switch (select) {
             case '전체' :
                 const all = visitJejuData.filter((visitJejuData) => {
-                    return (visitJejuData.address !== null && visitJejuData.address.includes(inputValue))
-                    || (visitJejuData.title !== null && visitJejuData.title.includes(inputValue))
-                    || (visitJejuData.alltag !== null && visitJejuData.alltag.includes(inputValue))
+                    return (!!visitJejuData.address && visitJejuData.address.includes(inputValue))
+                    || (!!visitJejuData.title && visitJejuData.title.includes(inputValue))
+                    || (!!visitJejuData.alltag && visitJejuData.alltag.includes(inputValue))
                 });
                 setSearch(all);
                 break;
             case '주소' :
                 const address = visitJejuData.filter((visitJejuData) => {
-                    return visitJejuData.address !== null && visitJejuData.address.includes(inputValue)
+                    return !!visitJejuData.address && visitJejuData.address.includes(inputValue)
                 });
                 setSearch(address);
                 break;
             case '이름' :
                 const title = visitJejuData.filter((visitJejuData) => {
-                    return visitJejuData.title !== null && visitJejuData.title.includes(inputValue)
+                    return !!visitJejuData.title && visitJejuData.title.includes(inputValue)
                 });
                 setSearch(title);
                 break;
             case '태그' :
                 const alltag = visitJejuData.filter((visitJejuData) => {
-                    return visitJejuData.alltag !== null && visitJejuData.alltag.includes(inputValue)
+                    return !!visitJejuData.alltag && visitJejuData.alltag.includes(inputValue)
                 });
                 setSearch(alltag);
                 break;
