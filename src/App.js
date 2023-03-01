@@ -7,12 +7,21 @@ import Footer from './main/Footer';
 import MainContent from './main/MainContent';
 import Theme from './sub/Theme';
 import Detail from './sub/Detail';
+import KakaoMap from './sub/KakaoMap';
 
 
 function App() {
+  const [error, setError] = useState(null)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [weatherData, setWeatherData] = useState(null);
+  const [visitJejuData, setVisitJejuData] = useState(null);
+  
+  const [nowWeather, setNowWeather] = useState(null)
+  const [tags, setTags] = useState([])
+
   const date = new Date();
-  let yesterday
-  let today
+  let yesterday;
+  let today;
 
   // 어제/오늘 일자
   function getDay() {
@@ -26,8 +35,8 @@ function App() {
       const prevMonth = ("0" + (_prevMonth.getMonth() + 1)).slice(-2);
       const prevDay = ('0' + _prevDay.getDate()).slice(-2);
 
-      yesterday = (year + prevMonth + prevDay)
-      today = (year + month + day)
+      yesterday = (year + prevMonth + prevDay);
+      today = (year + month + day);
     }
     if (date.getDate() < 1) {
       const year = date.getFullYear().toString();
@@ -35,21 +44,11 @@ function App() {
       const prevDay = ('0' + date.getDate() - 1).slice(-2);
       const day = ('0' + date.getDate() - 1).slice(-2);
       
-      yesterday = (year + month + prevDay)
-      today = (year + month + day)
+      yesterday = (year + month + prevDay);
+      today = (year + month + day);
     }
   }
   getDay()
-
-
-  const [error, setError] = useState(null)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [weatherData, setWeatherData] = useState(null);
-  const [visitJejuData, setVisitJejuData] = useState(null);
-  
-
-  const [nowWeather, setNowWeather] = useState(null)
-  const [tags, setTags] = useState([])
   
   useEffect(() => {
     const weatherUrl = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${process.env.REACT_APP_WEATHER_KEY}&dataType=JSON&numOfRows=1000&pageNo=1&base_date=${yesterday}&base_time=0500&nx=52&ny=38`;
@@ -87,7 +86,7 @@ function App() {
 
   // 현재 날씨
   function nowWeatherSetting(data) {
-    const _weatherData = data.response.body.items.item
+    const _weatherData = data.response.body.items.item;
     const hours = date.getHours();
     let time;
 
@@ -142,6 +141,16 @@ function App() {
             />
           }/>
           <Route path='theme/:id' element={<Detail />} />
+          {weatherData &&
+            <Route path='kakaomap' element={
+              <KakaoMap
+              visitJejuData = {visitJejuData.items}
+              nowWeather = {nowWeather}
+              tags = {tags}
+              today = {today}
+              />
+            } />
+          }
         </Route>
       </Routes>
     </Router>

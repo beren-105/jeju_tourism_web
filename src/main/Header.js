@@ -7,7 +7,7 @@ export default function Header() {
             <ul className='flex'>
                 <Link to="/"><li className='p-4'>메인</li></Link>
                 <Link to="/theme"><li className='p-4'>테마찾기</li></Link>
-                <li className='p-4'>날씨보기</li>
+                <Link to="/kakaomap"><li className='p-4'>날씨보기</li></Link>
             </ul>
         </div>
     )

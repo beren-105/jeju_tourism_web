@@ -87,7 +87,8 @@ export default function MainContent(props) {
 
     // 오늘의 최저/최고 기온/강수량
     function weatherForecast(items) {
-        const filterWeather = weatherData.filter(weatherData =>weatherData.fcstDate === today && weatherData.category === items);
+        const filterWeather = weatherData
+            .filter(weatherData =>weatherData.fcstDate === today && weatherData.category === items);
         return filterWeather[0].fcstValue;
     }
 
@@ -116,8 +117,10 @@ export default function MainContent(props) {
             }
         });
 
-        const filterPTY = weatherData.filter(weatherData => weatherData.fcstDate === today && weatherData.fcstTime === timeSting[index] && weatherData.category === 'PTY')[0].fcstValue;
-        const filterSKY = weatherData.filter(weatherData => weatherData.fcstDate === today && weatherData.fcstTime === timeSting[index] && weatherData.category === 'SKY')[0].fcstValue;
+        const filterPTY = weatherData
+            .filter(weatherData => weatherData.fcstDate === today && weatherData.fcstTime === timeSting[index] && weatherData.category === 'PTY')[0].fcstValue;
+        const filterSKY = weatherData
+            .filter(weatherData => weatherData.fcstDate === today && weatherData.fcstTime === timeSting[index] && weatherData.category === 'SKY')[0].fcstValue;
 
         this.index = index;
         this.setTime = timeArr[index];
