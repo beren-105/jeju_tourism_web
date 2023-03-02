@@ -147,8 +147,6 @@ function App() {
               <KakaoMap
               visitJejuData = {visitJejuData.items}
               nowWeather = {nowWeather}
-              tags = {tags}
-              today = {today}
               />
             } />
           }
