@@ -22,9 +22,9 @@ function App() {
   const date = new Date();
   let yesterday;
   let today;
-
+  
   // 어제/오늘 일자
-  function getDay() {
+  function getDays() {
     if (date.getDate() === 1 && date.getMonth() < 10) {
       const year = date.getFullYear().toString();
       const month = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -38,17 +38,18 @@ function App() {
       yesterday = (year + prevMonth + prevDay);
       today = (year + month + day);
     }
-    if (date.getDate() < 1) {
+    if (date.getDate() > 1) {
       const year = date.getFullYear().toString();
       const month = ("0" + (date.getMonth() + 1)).slice(-2);
-      const prevDay = ('0' + date.getDate() - 1).slice(-2);
-      const day = ('0' + date.getDate() - 1).slice(-2);
+      const prevDay = ('0' + (date.getDate() - 1)).slice(-2);
+      const day = ('0' + date.getDate()).slice(-2);
       
       yesterday = (year + month + prevDay);
       today = (year + month + day);
     }
   }
-  getDay()
+  getDays()
+
   
   useEffect(() => {
     const weatherUrl = `http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${process.env.REACT_APP_WEATHER_KEY}&dataType=JSON&numOfRows=1000&pageNo=1&base_date=${yesterday}&base_time=0500&nx=52&ny=38`;

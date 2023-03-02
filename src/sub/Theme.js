@@ -188,9 +188,10 @@ function List(props) {
         <>
         <section className="max-w-5xl mx-auto flex flex-wrap">
             {
-                pegeData.map(pegeData => (
+                pegeData.map((pegeData,i) => (
                     <Article
-                    pegeData = {pegeData}
+                        key={i}
+                        pegeData = {pegeData}
                     />
                 ))
             }
