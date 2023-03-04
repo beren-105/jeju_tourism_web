@@ -174,7 +174,7 @@ export default function KakaoMap(props) {
                                     className='border-b hover:bg-amber-100'
                                 >
                                     <button
-                                        className='p-4'
+                                        className='p-4 w-full text-left'
                                         type='button'
                                         onClick={(e) => searchClick(e.target.value)}
                                         value={searchData.title}
