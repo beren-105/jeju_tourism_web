@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faQuestion, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 export default function Theme(props) {
@@ -165,24 +165,24 @@ export default function Theme(props) {
 function List(props) {
     const total = props.total;
 
+    // 페이지네이션
     const [pegeData, setPegeDate] = useState(total.slice(0, 12));
     const [pege, setPege] = useState(1);
-    const pegeBtn = []
+    const pegeBtn = [];
     
     useEffect(() => {
-        setPegeDate(total.slice(0, 12))
+        setPegeDate(total.slice(0, 12));
     }, [total])
 
     for (let i=1; i<=Math.ceil((total.length)/12); i++) {
-        pegeBtn.push(i)
+        pegeBtn.push(i);
     }
 
     // 페이지 이동
     function pegeClick(index) {
-        setPegeDate(total.slice((12*index-12), (12*index)))
-        setPege(index)
+        setPegeDate(total.slice((12*index-12), (12*index)));
+        setPege(index);
     }
-    
 
     return (
         <>
@@ -197,6 +197,16 @@ function List(props) {
             }
         </section>
         <div className="max-w-5xl mx-auto text-center mb-8">
+            <button
+                disabled = {pege === 1 ? true : false}
+                onClick={() => pegeClick(pege-1)}
+            >
+                <FontAwesomeIcon
+                    className="mr-4"
+                    icon={faChevronLeft}
+                    color='#bbb'
+                />
+            </button>
             {pegeBtn.map((pegeBtn, i) => (
                 <button
                     className={`m-1 w-8 h-8 hover:bg-amber-300 rounded-full duration-300 ${pege === i+1 ? 'bg-amber-500 text-white font-bold' : null}`}
@@ -206,6 +216,16 @@ function List(props) {
                     {pegeBtn}
                 </button>
             ))}
+            <button
+                disabled = {pege === pegeBtn.length ? true : false}
+                onClick={() => pegeClick(pege+1)}
+            >
+                <FontAwesomeIcon
+                    className="ml-4"
+                    icon={faChevronRight}
+                    color='#bbb'
+                />
+            </button>
         </div>
         </>
     )

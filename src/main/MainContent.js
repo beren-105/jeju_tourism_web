@@ -353,7 +353,7 @@ function Keyword(props) {
     }
     
     return (
-        <section className='overflow-hidden flex items-center relative mb-20'>
+        <section className='overflow-hidden flex items-center relative'>
             <div className='w-full h-full bg-black/70 z-10 py-10'>
                 <div className='max-w-5xl mx-auto text-white text-center'>
                     <h2 className='text-4xl p-2 font-bold text-amber-500'>어떤게 끌려?</h2>

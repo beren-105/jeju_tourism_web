@@ -145,8 +145,10 @@ function App() {
           {weatherData &&
             <Route path='kakaomap' element={
               <KakaoMap
-              visitJejuData = {visitJejuData.items}
-              nowWeather = {nowWeather}
+                weatherData = {weatherData.response.body.items.item}
+                visitJejuData = {visitJejuData.items}
+                nowWeather = {nowWeather}
+                today = {today}
               />
             } />
           }
