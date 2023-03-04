@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Outlet, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
+
 import Header from './main/Header';
 import Footer from './main/Footer';
 import MainContent from './main/MainContent';
@@ -9,6 +10,7 @@ import Theme from './sub/Theme';
 import Detail from './sub/Detail';
 import KakaoMap from './sub/KakaoMap';
 
+import logo from './main/image/location.png'
 
 function App() {
   const [error, setError] = useState(null)
@@ -81,7 +83,7 @@ function App() {
   }
 
   if (!isLoaded) {
-    return <p>fetching data...</p>
+    return <Loading />
   }
 
 
@@ -153,6 +155,7 @@ function App() {
             } />
           }
         </Route>
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </Router>
   );
@@ -166,6 +169,35 @@ function Layout() {
       <Footer />
     </>
   )
+}
+
+function Loading() {
+  return (
+    <>
+      <div className='w-screen h-screen bg-gradient-to-r from-amber-200 to-green-200 flex flex-col items-center justify-center'>
+        <div className='border border-white rounded-full w-32 h-32 border-8 animate-ping mb-20'></div>
+        <p className='text-xl'>데이터 로딩중...</p>
+      </div>
+    </>
+  )
+}
+
+function NotFound() {
+  return (
+    <article className='h-screen flex flex-col items-center justify-center'>
+      <h1 className='text-8xl font-thin mb-4'>404 Erroe</h1>
+      <h3 className='mb-8'>페이지를 찾을 수 없습니다.</h3>
+      <img
+        className='w-16 animate-bounce mb-2'
+        src={logo}
+        alt='logo'
+      />
+      <Link to='/'>
+        <button className='px-4 py-2 bg-amber-500 rounded-full text-white hover:bg-amber-300 duration-300'>&lt; 메인으로 돌아가기 &gt;</button>
+      </Link>
+    </article>
+  )
+
 }
 
 export default App;
