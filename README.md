@@ -1,7 +1,7 @@
 <h1>제주관광 사이트, 오늘의 제주</h1>
 
-사이트주소 : 
-제작과정 : 
+<p>사이트 주소 : https://todays-jeju.netlify.app/</p>
+<p>제작 과정 : https://beren-105.tistory.com/18</p>
 
 <h3>개발동기</h3>
 "제주도에 여행왔는데 오늘은 어디를 갈까?"

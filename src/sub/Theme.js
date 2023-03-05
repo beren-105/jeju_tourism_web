@@ -76,7 +76,6 @@ export default function Theme(props) {
         if (search.length === 0 || tag.length === 0) {
             setTotal(null);
             setTotal(null);
-        } else if (tag.length === 0) {
         } else if (search.length >= tag.length) {
             const tagArr = []
             tag.map(tag => tagArr.push(tag.contentsid))
