@@ -138,7 +138,7 @@ export default function KakaoMap(props) {
                 />
             </button>
             <div
-                className={`absolute px-4 top-0 left-0 h-full bg-white z-30 overflow-y-auto duration-300 w-80 sm:w-96 ${listShow ? 'left-0' : '-left-80 sm:-left-96'}`}
+                className={`absolute px-4 top-0 left-0 h-full bg-white z-30 overflow-y-auto duration-300 w-80 sm:w-96 ${listShow ? 'translate-x-0' : '-translate-x-80 sm:-translate-x-96'}`}
             >
                 {/* 검색창 */}
                 <form
