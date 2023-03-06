@@ -19,15 +19,15 @@ export default function Header() {
                     </div>
                 </Link>
                 <ul className='inline-flex'>
-                    <Link to="/"><li className={`${location.pathname === '/' ? 'text-amber-500 font-bold' : null} relative p-4 mx-2 group/line`}>
+                    <Link to="/"><li className={`${location.pathname === '/' ? 'text-amber-500 font-bold' : null} relative py-4 px-2 sm:px-4 mx-2 group/line`}>
                         메인
                         <div className="absolute w-0 h-0.5 bottom-2 left-0 bg-amber-300 group-hover/line:w-full duration-300"></div>
                     </li></Link>
-                    <Link to="/theme"><li className={`${location.pathname.includes('/theme')  ? 'text-amber-500 font-bold' : null} relative p-4 mx-2 group/line`}>
+                    <Link to="/theme"><li className={`${location.pathname.includes('/theme')  ? 'text-amber-500 font-bold' : null} relative py-4 px-2 sm:px-4 mx-2 group/line`}>
                         테마찾기
                         <div className="absolute w-0 h-0.5 bottom-2 left-0 bg-amber-300 group-hover/line:w-full duration-300"></div>
                     </li></Link>
-                    <Link to="/kakaomap"><li className={`${location.pathname === '/kakaomap' ? 'text-amber-500 font-bold' : null} relative p-4 mx-2 group/line`}>
+                    <Link to="/kakaomap"><li className={`${location.pathname === '/kakaomap' ? 'text-amber-500 font-bold' : null} relative py-4 px-2 sm:px-4 mx-2 group/line`}>
                         지도보기
                         <div className="absolute w-0 h-0.5 bottom-2 left-0 bg-amber-300 group-hover/line:w-full duration-300"></div>
                     </li></Link>

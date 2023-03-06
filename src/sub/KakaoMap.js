@@ -88,7 +88,7 @@ export default function KakaoMap(props) {
     function hendleSubmit(e) {
         e.preventDefault();
         if (inputs.trim() === '') {
-            setLocalDatas(all);
+            setAllDatas(all);
 
         } else {
             const filterData =  filterItmes(inputs);
@@ -128,8 +128,7 @@ export default function KakaoMap(props) {
         <section className='relative h-screen bg-white'>
             {/* 리스트 닫기 버튼 */}
             <button
-                className='absolute top-1/2 -translate-y-1/2 p-2 pl-1 rounded-r-md bg-white z-40 duration-300'
-                style={{left: `${listShow ? '450px' : '0px'}`}}
+                className={`absolute top-1/2 -translate-y-1/2 p-2 pl-1 rounded-r-md bg-white z-40 duration-300 ${listShow ? 'left-80 sm:left-96' : 'left-0'}`}
                 onClick={() => setListShow(!listShow)}
             >
                 <FontAwesomeIcon
@@ -139,11 +138,7 @@ export default function KakaoMap(props) {
                 />
             </button>
             <div
-                className='absolute px-4 top-0 left-0 h-full bg-white z-40 overflow-y-auto duration-300'
-                style={{
-                    width: '450px',
-                    transform: `translateX(${listShow ? '0px' : '-450px'})`
-                }}
+                className={`absolute px-4 top-0 left-0 h-full bg-white z-30 overflow-y-auto duration-300 w-80 sm:w-96 ${listShow ? 'left-0' : '-left-80 sm:-left-96'}`}
             >
                 {/* 검색창 */}
                 <form
@@ -282,7 +277,7 @@ function Lists(props) {
                 />
             ))
         : null}
-        <div className="max-w-5xl mx-auto text-center mt-6">
+        <div className="max-w-5xl mx-auto text-center my-6">
             <button
                 disabled = {pege === 1 ? true : false}
                 onClick={() => pegeClick(pege-1)}

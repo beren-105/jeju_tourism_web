@@ -358,7 +358,7 @@ function Keyword(props) {
                 <div className='max-w-5xl mx-auto text-white text-center'>
                     <h2 className='text-4xl p-2 font-bold text-amber-500'>어떤게 끌려?</h2>
                     <p className='mb-8'>지금 마음이 가는 태그를 클릭해보세요!</p>
-                    <div className='flex justify-evenly text-black bg-white rounded-full mb-6 py-2 mx-4 lg:mx-0'>
+                    <div className='flex flex-wrap justify-evenly text-black bg-white rounded-full mb-6 py-2 mx-4 lg:mx-0'>
                         {tags.map((tags, i) => (
                             <button
                                 key={'btn'+i}

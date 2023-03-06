@@ -28,7 +28,7 @@ export default function Detail() {
             />
         </section>
         <section className="max-w-5xl mx-auto mb-12">
-            <div className="pt-4 pb-6 px-20 border-y border-t-4 text-center mb-8">
+            <div className="pt-4 pb-6 px-10 border-y border-t-4 text-center mb-8 sm:px-20">
                 <h2 className="text-3xl p-4 font-bold text-amber-500">{item.title}</h2>
                 {tags.map(tag => (
                     <span
@@ -126,7 +126,7 @@ function Review() {
                         placeholder='댓글을 입력해주세요.'
                     />
                     <button
-                        className="w-1/6 bg-amber-500 text-white p-4 rounded hover:bg-amber-300 duration-300"
+                        className="bg-amber-500 text-white p-4 rounded hover:bg-amber-300 duration-300 sm:w-1/6"
                         type="submit"
                     >
                         작성하기

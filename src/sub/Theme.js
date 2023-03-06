@@ -123,13 +123,13 @@ export default function Theme(props) {
                     <option value='태그'>태그</option>
                 </select>
                 <input
-                    className="border-y border-l py-2 px-4 outline-none text-lg"
+                    className="border-y w-full border-l py-2 px-4 outline-none text-lg"
                     type='text'
                     placeholder="검색"
                     onChange={(e) => setInputValue(e.target.value)}
                 />
                 <button
-                    className="text-white bg-amber-500 pl-4 pr-6 rounded-r-full hover:bg-amber-300 duration-300"
+                    className="shrink-0 text-white bg-amber-500 pl-4 pr-6 rounded-r-full hover:bg-amber-300 duration-300"
                     type="submit"
                 >검색</button>
             </form>
